@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#d4a017" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="GLDR" />
+  <title>GoldenRetriever (GLDR) — Total Gold Retrieved</title>
+  <meta name="description" content="Track total Gold retrieved by GoldenRetriever (GLDR) on LONG.XYZ plus your personal GLDR balance." />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="https://storage.long.xyz/tokens/0x46bd9f1276234651d9be3ade250203c2094e1e18.png" />
+  <link rel="icon" href="https://storage.long.xyz/tokens/0x46bd9f1276234651d9be3ade250203c2094e1e18.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Outfit:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="site-frame">
+    <div class="metal-grain" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="https://goldenretriever.fans" target="_blank" rel="noopener noreferrer" aria-label="GoldenRetriever website">
+        <img class="coin-logo" src="https://storage.long.xyz/tokens/0x46bd9f1276234651d9be3ade250203c2094e1e18.png" alt="GoldenRetriever gold coin logo" />
+      </a>
+      <nav class="social-nav">
+        <a class="icon-link" href="https://x.com/gldrcoin" target="_blank" rel="noopener noreferrer" aria-label="GoldenRetriever on X" title="X">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
+        </a>
+        <a class="icon-link icon-tg" href="https://t.me/GoldenRetrieverGLDRPortal" target="_blank" rel="noopener noreferrer" aria-label="GoldenRetriever Telegram" title="Telegram">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+        </a>
+        <a class="icon-link icon-fomo" href="https://fomo.family/tokens/robinhood/0x46bd9f1276234651d9be3ade250203c2094e1e18" target="_blank" rel="noopener noreferrer" aria-label="FOMO app" title="FOMO">
+          <img src="/fomo.png" alt="" />
+        </a>
+      </nav>
+    </header>
+
+    <div class="ticker-bezel" aria-label="GoldenRetriever retrieves Gold to retrieve you!">
+      <div class="ticker">
+        <div class="ticker-track">
+          <div class="ticker-seq">
+            <p class="ticker-copy">GoldenRetriever retrieves Gold to retrieve you!</p>
+            <p class="ticker-copy" aria-hidden="true">GoldenRetriever retrieves Gold to retrieve you!</p>
+          </div>
+          <div class="ticker-seq" aria-hidden="true">
+            <p class="ticker-copy">GoldenRetriever retrieves Gold to retrieve you!</p>
+            <p class="ticker-copy">GoldenRetriever retrieves Gold to retrieve you!</p>
+          </div>
+        </div>
+        <div class="ticker-mesh" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <main id="top">
+      <section class="info-stage" aria-label="Gold retrieved and wallet">
+        <video
+          class="info-bg"
+          src="/GLDRbg.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          aria-hidden="true"
+        ></video>
+        <div class="info-overlay">
+          <h1>Total Gold retrieved: <span id="total-gold">$—</span></h1>
+          <div class="wallet-panel">
+            <form class="wallet-form" id="wallet-form">
+              <label for="wallet">My wallet</label>
+              <div class="wallet-row">
+                <input
+                  id="wallet"
+                  name="wallet"
+                  type="text"
+                  inputmode="text"
+                  enterkeyhint="go"
+                  spellcheck="false"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  autocorrect="off"
+                  placeholder="0x…"
+                  maxlength="42"
+                />
+                <button type="submit" class="btn btn-gold" id="lookup-btn">Look up</button>
+              </div>
+            </form>
+            <p class="wallet-error" id="wallet-error" hidden></p>
+            <div class="personal-grid">
+              <article class="card">
+                <span class="label">Personal balance</span>
+                <strong id="personal-balance">—</strong>
+                <em>GLDR</em>
+              </article>
+              <article class="card">
+                <span class="label">Personal worth</span>
+                <strong id="personal-worth">$—</strong>
+                <em>GLDR in $</em>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="chart-card" aria-label="GLDR price last 12 hours">
+        <div class="chart-head">
+          <span>12h</span>
+          <strong id="chart-price">$—</strong>
+        </div>
+        <svg class="price-chart" id="price-chart" viewBox="0 0 400 140" preserveAspectRatio="none" role="img" aria-label="GLDR USD price, last 12 hours">
+          <defs>
+            <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffe08a" stop-opacity="0.55" />
+              <stop offset="100%" stop-color="#ffe08a" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path id="chart-fill" fill="url(#chartFill)" />
+          <path id="chart-line" fill="none" />
+        </svg>
+        <div class="chart-axis">
+          <span>12h ago</span>
+          <span>now</span>
+        </div>
+      </section>
+    </main>
+
+    <div class="ticker-bezel ticker-foot" aria-label="GOOD JOB! GOOD BOY!">
+      <div class="ticker">
+        <div class="ticker-track">
+          <div class="ticker-seq">
+            <p class="ticker-copy">GOOD JOB!</p>
+            <p class="ticker-copy">GOOD BOY!</p>
+            <p class="ticker-copy">GOOD JOB!</p>
+            <p class="ticker-copy">GOOD BOY!</p>
+          </div>
+          <div class="ticker-seq" aria-hidden="true">
+            <p class="ticker-copy">GOOD JOB!</p>
+            <p class="ticker-copy">GOOD BOY!</p>
+            <p class="ticker-copy">GOOD JOB!</p>
+            <p class="ticker-copy">GOOD BOY!</p>
+          </div>
+        </div>
+        <div class="ticker-mesh" aria-hidden="true"></div>
+      </div>
+    </div>
+    <p class="copyright">© GoldenRetriever</p>
+  </div>
+  <div class="site-shimmer" aria-hidden="true">
+    <div class="site-shimmer-beam"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
