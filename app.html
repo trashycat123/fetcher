@@ -25,9 +25,19 @@
   </div>
   <div class="site-frame">
     <header class="topbar">
-      <a class="brand" href="https://goldenretriever.fans" target="_blank" rel="noopener noreferrer" aria-label="GoldenRetriever website">
-        <img class="coin-logo" src="https://storage.long.xyz/tokens/0x46bd9f1276234651d9be3ade250203c2094e1e18.png" alt="GoldenRetriever gold coin logo" />
-      </a>
+      <div class="brand-cluster">
+        <a class="brand" href="https://goldenretriever.fans" target="_blank" rel="noopener noreferrer" aria-label="GoldenRetriever website">
+          <img class="coin-logo" src="https://storage.long.xyz/tokens/0x46bd9f1276234651d9be3ade250203c2094e1e18.png" alt="GoldenRetriever gold coin logo" />
+        </a>
+        <span class="pair-slash" aria-hidden="true">/</span>
+        <img class="coin-logo gold-bar-logo" src="./gld-bar.svg" alt="" />
+        <div class="gld-meter" aria-live="polite" aria-label="GLD price">
+          <span id="gld-price">$—</span>
+          <span class="chg-arrow" id="gld-arrow" hidden>
+            <svg viewBox="0 0 12 14" aria-hidden="true"><path d="M6 1.2 11 8.2H8.2v4.6H3.8V8.2H1Z"/></svg>
+          </span>
+        </div>
+      </div>
       <nav class="social-nav">
         <a class="icon-link" href="https://x.com/gldrcoin" target="_blank" rel="noopener noreferrer" aria-label="GoldenRetriever on X" title="X">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
@@ -36,7 +46,7 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
         </a>
         <a class="icon-link icon-fomo" href="https://fomo.family/tokens/robinhood/0x46bd9f1276234651d9be3ade250203c2094e1e18" target="_blank" rel="noopener noreferrer" aria-label="FOMO app" title="FOMO">
-          <img src="./fomo.png" alt="" />
+          <span class="fomo-mark" aria-hidden="true"></span>
         </a>
       </nav>
     </header>
@@ -70,7 +80,7 @@
           aria-hidden="true"
         ></video>
         <div class="info-overlay">
-          <h1>Total Gold retrieved: <span id="total-gold">$—</span></h1>
+          <h1>Total Gold retrieved: <span class="metric-row total-gold-row"><span id="total-gold">$—</span><span class="chg-arrow up" id="total-arrow" aria-label="Increasing"><svg viewBox="0 0 12 14" aria-hidden="true"><path d="M6 1.2 11 8.2H8.2v4.6H3.8V8.2H1Z"/></svg></span></span></h1>
           <div class="wallet-panel">
             <form class="wallet-form" id="wallet-form">
               <label for="wallet">My wallet</label>
@@ -100,7 +110,12 @@
               </article>
               <article class="card">
                 <span class="label">Personal worth</span>
-                <strong id="personal-worth">$—</strong>
+                <div class="metric-row">
+                  <strong id="personal-worth">$—</strong>
+                  <span class="chg-arrow" id="worth-arrow" hidden>
+                    <svg viewBox="0 0 12 14" aria-hidden="true"><path d="M6 1.2 11 8.2H8.2v4.6H3.8V8.2H1Z"/></svg>
+                  </span>
+                </div>
                 <em>GLDR in $</em>
               </article>
             </div>
@@ -109,7 +124,7 @@
       </section>
       <section class="chart-card" aria-label="GLDR price last 12 hours">
         <div class="chart-head">
-          <span>12h</span>
+          <span class="chart-range">12h</span>
           <strong id="chart-price">$—</strong>
         </div>
         <svg class="price-chart" id="price-chart" viewBox="0 0 400 140" preserveAspectRatio="none" role="img" aria-label="GLDR USD price, last 12 hours">

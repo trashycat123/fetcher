@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <circle cx="32" cy="32" r="32" fill="#d4a017"/>
+  <defs>
+    <linearGradient id="barTop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff6c8"/>
+      <stop offset="35%" stop-color="#ffe08a"/>
+      <stop offset="70%" stop-color="#d4a017"/>
+      <stop offset="100%" stop-color="#8a5a10"/>
+    </linearGradient>
+    <linearGradient id="barFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8c547"/>
+      <stop offset="100%" stop-color="#9a6b12"/>
+    </linearGradient>
+    <linearGradient id="barSide" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c99412"/>
+      <stop offset="100%" stop-color="#6b450c"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#barFront)" d="M12 34 L28 42 L52 30 L36 22 Z"/>
+  <path fill="url(#barSide)" d="M12 34 L12 40 L28 48 L28 42 Z"/>
+  <path fill="#8a5a10" d="M28 42 L28 48 L52 36 L52 30 Z"/>
+  <path fill="url(#barTop)" d="M16 28 L32 36 L48 26 L32 18 Z"/>
+  <path fill="none" stroke="#fff6d0" stroke-width="1.2" d="M20 27 L44 25"/>
+</svg>

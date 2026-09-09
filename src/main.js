@@ -139,11 +139,13 @@ function smoothLine(points) {
   return d;
 }
 
-async function fetchTwelveHourCloses() {
+async function fetchTwelveHourCloses(token = "base") {
   const url =
     "https://api.geckoterminal.com/api/v2/networks/robinhood/pools/" +
     POOL_ID +
-    "/ohlcv/minute?aggregate=15&limit=48&currency=usd&token=base&include_empty_intervals=true";
+    "/ohlcv/minute?aggregate=15&limit=48&currency=usd&token=" +
+    token +
+    "&include_empty_intervals=true";
   const res = await fetch(url, { headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error("Chart feed unavailable");
   const data = await res.json();
@@ -153,6 +155,31 @@ async function fetchTwelveHourCloses() {
     .map((row) => ({ t: Number(row[0]), close: Number(row[4]) }))
     .filter((p) => Number.isFinite(p.t) && Number.isFinite(p.close) && p.t >= cutoff)
     .sort((a, b) => a.t - b.t);
+}
+
+function changeDir(series) {
+  if (!series || series.length < 2) return "";
+  const first = series[0].close;
+  const last = series[series.length - 1].close;
+  if (!(first > 0) || !Number.isFinite(first) || !Number.isFinite(last)) return "";
+  if (last > first) return "up";
+  if (last < first) return "down";
+  return "";
+}
+
+function setArrow(el, dir) {
+  if (!el) return;
+  const show = dir === "up" || dir === "down";
+  el.hidden = !show;
+  el.classList.toggle("up", dir === "up");
+  el.classList.toggle("down", dir === "down");
+  el.setAttribute("aria-label", dir === "up" ? "Up vs 12 hours ago" : dir === "down" ? "Down vs 12 hours ago" : "");
+}
+
+function applyGldrArrows() {
+  const hasWallet = els.balance && els.balance.textContent !== "—";
+  const dir = hasWallet ? change.gldr : "";
+  setArrow(document.getElementById("worth-arrow"), dir);
 }
 
 function renderChart(series) {
@@ -274,23 +301,72 @@ const els = {
 };
 
 let prices = { gldrUsd: 0, gldUsd: 0 };
+let change = { gldr: "", gld: "" };
+let lastTotalUsd = null;
+
+function pingRise(el) {
+  if (!el) return;
+  el.classList.remove("is-rising");
+  void el.offsetWidth;
+  el.classList.add("is-rising");
+  el.addEventListener(
+    "animationend",
+    () => el.classList.remove("is-rising"),
+    { once: true },
+  );
+}
 
 async function refreshTotals() {
   try {
     prices = await fetchPrices();
     const fees = await fetchGoldRetrieved(prices);
     els.total.textContent = formatUsd(fees.totalUsd);
+    const totalArrow = document.getElementById("total-arrow");
+    if (totalArrow) {
+      totalArrow.hidden = false;
+      totalArrow.classList.add("up");
+      totalArrow.classList.remove("down");
+    }
+    if (lastTotalUsd != null && fees.totalUsd > lastTotalUsd + 1e-8) {
+      pingRise(totalArrow);
+    }
+    lastTotalUsd = fees.totalUsd;
+    const gldPrice = document.getElementById("gld-price");
+    if (gldPrice) gldPrice.textContent = formatUsd(prices.gldUsd);
   } catch {
     els.total.textContent = "$—";
+  }
+  fitHeadline();
+}
+
+function fitHeadline() {
+  const h1 = document.querySelector(".info-overlay > h1");
+  if (!h1 || h1.clientWidth < 40) return;
+  h1.style.fontSize = "32px";
+  let size = 32;
+  while (h1.scrollWidth > h1.clientWidth && size > 11) {
+    size -= 0.35;
+    h1.style.fontSize = `${size}px`;
   }
 }
 
 async function refreshChart() {
   try {
-    const series = await fetchTwelveHourCloses();
-    renderChart(series);
+    const [gldrSeries, gldSeries] = await Promise.all([
+      fetchTwelveHourCloses("base"),
+      fetchTwelveHourCloses("quote"),
+    ]);
+    change.gldr = changeDir(gldrSeries);
+    change.gld = changeDir(gldSeries);
+    renderChart(gldrSeries);
+    setArrow(document.getElementById("gld-arrow"), change.gld);
+    applyGldrArrows();
   } catch {
     renderChart([]);
+    setArrow(document.getElementById("gld-arrow"), "");
+    change.gldr = "";
+    change.gld = "";
+    applyGldrArrows();
   }
 }
 
@@ -310,6 +386,7 @@ async function lookupWallet(raw) {
     showError("Enter a valid 0x wallet address.");
     els.balance.textContent = "—";
     els.worth.textContent = "$—";
+    applyGldrArrows();
     return;
   }
   showError("");
@@ -321,6 +398,7 @@ async function lookupWallet(raw) {
     const balance = await fetchBalance(wallet);
     els.balance.textContent = formatToken(balance);
     els.worth.textContent = formatUsd(balance * prices.gldrUsd);
+    applyGldrArrows();
   } catch (err) {
     showError(err.message || "Could not read that wallet.");
   }
@@ -340,6 +418,14 @@ refreshTotals().then(() => {
   if (saved) lookupWallet(saved);
 });
 refreshChart();
+fitHeadline();
+document.fonts?.ready.then(fitHeadline);
+const headlineBox = document.querySelector(".info-overlay");
+if (headlineBox && typeof ResizeObserver !== "undefined") {
+  new ResizeObserver(fitHeadline).observe(headlineBox);
+} else {
+  window.addEventListener("resize", fitHeadline);
+}
 
 setInterval(refreshTotals, 60_000);
 setInterval(refreshChart, 60_000);
