@@ -21,9 +21,25 @@ html, body {
 
 html {
   -webkit-text-size-adjust: 100%;
-  min-height: 100%;
   background-color: #c9951a;
-  background-attachment: fixed;
+}
+
+body {
+  min-height: 100dvh;
+  min-height: 100svh;
+  font-family: "Outfit", system-ui, sans-serif;
+  color: var(--ink);
+  overscroll-behavior: none;
+  background-color: #c9951a;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gold-stage {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: #c9951a;
   background-image:
     radial-gradient(900px 420px at 18% 8%, rgba(255, 250, 230, 0.72) 0%, transparent 58%),
     radial-gradient(700px 380px at 88% 18%, rgba(255, 236, 170, 0.38) 0%, transparent 55%),
@@ -58,16 +74,6 @@ html {
     linear-gradient(180deg, #f0d56a 0%, #d4a017 42%, #a87512 78%, #7a520c 100%);
 }
 
-body {
-  min-height: 100dvh;
-  min-height: 100svh;
-  font-family: "Outfit", system-ui, sans-serif;
-  color: var(--ink);
-  overscroll-behavior: none;
-  background: transparent;
-  -webkit-tap-highlight-color: transparent;
-}
-
 .site-frame {
   position: relative;
   z-index: 1;
@@ -91,7 +97,7 @@ body {
 
 .metal-grain {
   pointer-events: none;
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   opacity: 0.22;
@@ -99,6 +105,33 @@ body {
   background-image:
     repeating-linear-gradient(90deg, rgba(255, 240, 180, 0.18) 0 1px, transparent 1px 3px),
     repeating-linear-gradient(0deg, rgba(80, 45, 0, 0.12) 0 1px, transparent 1px 4px);
+}
+
+.metal-shine {
+  pointer-events: none;
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: -40%;
+  width: 42%;
+  z-index: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.04) 38%,
+    rgba(255, 252, 235, 0.42) 50%,
+    rgba(255, 230, 140, 0.12) 58%,
+    transparent 72%
+  );
+  filter: blur(8px);
+  animation: metal-gleam 9s ease-in-out infinite;
+}
+
+@keyframes metal-gleam {
+  0% { transform: translateX(-10%) skewX(-16deg); opacity: 0.15; }
+  35% { opacity: 0.85; }
+  70% { opacity: 0.35; }
+  100% { transform: translateX(280%) skewX(-16deg); opacity: 0.1; }
 }
 
 .site-shimmer {
@@ -149,6 +182,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .metal-shine { animation: none; opacity: 0.45; transform: translateX(40%) skewX(-16deg); }
   .site-shimmer { display: none; }
   .ticker-track { animation: none; }
 }
@@ -643,10 +677,6 @@ html.is-app .copyright {
 }
 
 @media (min-width: 480px) {
-  html.is-app body {
-    background: #1a1208;
-  }
-
   html.is-app .site-frame {
     max-width: 430px;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 24px 60px rgba(0, 0, 0, 0.45);
