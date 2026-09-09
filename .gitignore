@@ -1,3 +1,15 @@
 node_modules
 dist
 .DS_Store
+android/app/build
+android/.gradle
+android/local.properties
+android/captures
+ios/App/Pods
+ios/App/build
+*.ipa
+*.apk
+*.aab
+*.keystore
+*.jks
+*.dSYM.zip

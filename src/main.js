@@ -7,6 +7,15 @@ import {
   isAddress,
   getAddress,
 } from "viem";
+import { Capacitor } from "@capacitor/core";
+import { SplashScreen } from "@capacitor/splash-screen";
+import { StatusBar, Style } from "@capacitor/status-bar";
+
+if (Capacitor.isNativePlatform()) {
+  document.documentElement.classList.add("is-app");
+  StatusBar.setStyle({ style: Style.Dark }).catch(() => {});
+  SplashScreen.hide().catch(() => {});
+}
 
 const GLDR = "0x46Bd9f1276234651D9Be3Ade250203C2094E1e18";
 const HOOK = "0x4e3468951D49f2EEa976eD0D6e75fFCb44a9a544";
