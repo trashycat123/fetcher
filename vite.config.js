@@ -6,7 +6,7 @@ const root = fileURLToPath(new URL(".", import.meta.url));
 const native = process.env.npm_lifecycle_event === "build:native";
 
 export default defineConfig({
-  base: native ? "./" : "/",
+  base: "./",
   build: {
     rollupOptions: {
       input: {
