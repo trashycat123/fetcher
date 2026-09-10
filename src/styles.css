@@ -240,12 +240,32 @@ body {
   align-items: center;
   gap: 5px;
   min-width: 0;
+  height: var(--tap);
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background:
+    linear-gradient(
+      135deg,
+      #fff6c8 0%,
+      #ffe08a 35%,
+      #d4a017 70%,
+      #8a5a10 100%
+    );
   font-family: "Outfit", system-ui, sans-serif;
   font-weight: 700;
-  color: #1a0e04;
-  -webkit-text-fill-color: #1a0e04;
-  -webkit-text-stroke: 1px #fff;
-  paint-order: stroke fill;
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  -webkit-text-stroke: 0;
+}
+
+.gld-meter .chg-arrow {
+  color: var(--ink);
+  filter: none;
+}
+
+.gld-meter .chg-arrow svg {
+  stroke: var(--ink);
 }
 
 #gld-price {
