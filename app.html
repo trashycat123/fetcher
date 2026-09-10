@@ -30,13 +30,9 @@
           <img class="coin-logo" src="https://storage.long.xyz/tokens/0x46bd9f1276234651d9be3ade250203c2094e1e18.png" alt="GoldenRetriever gold coin logo" />
         </a>
         <span class="pair-slash" aria-hidden="true">/</span>
-        <img class="coin-logo gold-bar-logo" src="./gld-bar.svg" alt="" />
-        <div class="gld-meter" aria-live="polite" aria-label="GLD price">
-          <span id="gld-price">$—</span>
-          <span class="chg-arrow" id="gld-arrow" hidden>
-            <svg viewBox="0 0 12 14" aria-hidden="true"><path d="M6 1.2 11 8.2H8.2v4.6H3.8V8.2H1Z"/></svg>
-          </span>
-        </div>
+        <a class="brand" href="https://en.wikipedia.org/wiki/SPDR_Gold_Shares" target="_blank" rel="noopener noreferrer" aria-label="About GLD (SPDR Gold Shares)" title="GLD">
+          <img class="coin-logo gold-bar-logo" src="./gld-bar.svg" alt="GLD" />
+        </a>
       </div>
       <nav class="social-nav">
         <a class="icon-link" href="https://x.com/gldrcoin" target="_blank" rel="noopener noreferrer" aria-label="GoldenRetriever on X" title="X">
@@ -124,7 +120,7 @@
       </section>
       <section class="chart-card" aria-label="GLDR price last 12 hours">
         <div class="chart-head">
-          <span class="chart-range">12h</span>
+          <span class="chart-range">GLDR 12H</span>
           <strong id="chart-price">$—</strong>
         </div>
         <svg class="price-chart" id="price-chart" viewBox="0 0 400 140" preserveAspectRatio="none" role="img" aria-label="GLDR USD price, last 12 hours">
@@ -139,6 +135,26 @@
         </svg>
         <div class="chart-axis">
           <span>12h ago</span>
+          <span>now</span>
+        </div>
+      </section>
+      <section class="chart-card chart-xau" aria-label="GLD gold price last 100 years">
+        <div class="chart-head">
+          <span class="chart-range">GLD 100Y</span>
+          <strong id="xau-price">$—</strong>
+        </div>
+        <svg class="price-chart xau-chart" id="xau-chart" viewBox="0 0 400 50" preserveAspectRatio="none" role="img" aria-label="Gold USD price, last 100 years">
+          <defs>
+            <linearGradient id="xauFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffe08a" stop-opacity="0.55" />
+              <stop offset="100%" stop-color="#ffe08a" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path id="xau-fill" fill="url(#xauFill)" />
+          <path id="xau-line" fill="none" />
+        </svg>
+        <div class="chart-axis">
+          <span>100y ago</span>
           <span>now</span>
         </div>
       </section>
@@ -167,6 +183,14 @@
   </div>
   <div class="site-shimmer" aria-hidden="true">
     <div class="site-shimmer-beam"></div>
+  </div>
+
+  <div id="install-sheet" class="install-sheet" hidden>
+    <p id="install-copy" class="install-copy">Install Fetcher on your phone</p>
+    <div class="install-actions">
+      <button type="button" id="install-app" class="install-btn">Install</button>
+      <button type="button" id="install-dismiss" class="install-dismiss">Not now</button>
+    </div>
   </div>
 
   <script type="module" src="/src/main.js"></script>

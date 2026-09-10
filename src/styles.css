@@ -16,7 +16,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  height: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 html {
@@ -82,11 +84,10 @@ body {
   margin: 0 auto;
   min-height: 100dvh;
   min-height: 100svh;
-  height: 100dvh;
-  height: 100svh;
+  height: auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   padding:
     env(safe-area-inset-top, 0px)
     env(safe-area-inset-right, 0px)
@@ -186,6 +187,7 @@ body {
   .site-shimmer { display: none; }
   .ticker-track { animation: none; }
   .chg-arrow.is-rising { animation: none; }
+  h1 { animation: none; background-position: 40% 50%; }
 }
 
 .topbar, main, .ticker-bezel, .copyright {
@@ -198,9 +200,10 @@ body {
   width: 100%;
   padding: 10px 14px 6px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px 10px;
 }
 
 .brand-cluster {
@@ -233,45 +236,6 @@ body {
   text-decoration: none;
   color: inherit;
   flex-shrink: 0;
-}
-
-.gld-meter {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  height: var(--tap);
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 2px solid #fff;
-  background:
-    linear-gradient(
-      135deg,
-      #fff6c8 0%,
-      #ffe08a 35%,
-      #d4a017 70%,
-      #8a5a10 100%
-    );
-  font-family: "Outfit", system-ui, sans-serif;
-  font-weight: 700;
-  color: var(--ink);
-  -webkit-text-fill-color: var(--ink);
-  -webkit-text-stroke: 0;
-}
-
-.gld-meter .chg-arrow {
-  color: var(--ink);
-  filter: none;
-}
-
-.gld-meter .chg-arrow svg {
-  stroke: var(--ink);
-}
-
-#gld-price {
-  font-family: "Fraunces", Georgia, serif;
-  font-size: 0.92rem;
-  white-space: nowrap;
 }
 
 .metric-row {
@@ -313,7 +277,11 @@ body {
   background: #d4a017;
 }
 
-.social-nav { display: flex; gap: 8px; }
+.social-nav {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
 
 .icon-link {
   display: inline-flex;
@@ -454,7 +422,7 @@ body {
 }
 
 main {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -462,11 +430,12 @@ main {
   justify-content: flex-start;
   gap: 10px;
   padding: 2px 12px;
+  overflow: visible;
 }
 
 h1 {
   font-family: "Big Shoulders Display", Impact, "Arial Narrow", sans-serif;
-  font-size: 1.75rem;
+  font-size: 1.95rem;
   line-height: 1;
   font-weight: 900;
   letter-spacing: -0.03em;
@@ -484,9 +453,44 @@ h1 {
   gap: 0.2em;
   white-space: nowrap;
   color: #e6b422;
-  -webkit-text-fill-color: #e6b422;
-  -webkit-text-stroke: 1.8px #000;
+  -webkit-text-stroke: 0.8px #000;
   paint-order: stroke fill;
+  background-image:
+    linear-gradient(
+      108deg,
+      transparent 28%,
+      rgba(255, 255, 255, 0.1) 40%,
+      rgba(255, 252, 235, 0.85) 50%,
+      rgba(255, 214, 90, 0.25) 56%,
+      transparent 68%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(42, 28, 10, 0.28) 0 1px,
+      rgba(255, 244, 200, 0.22) 1px 2px,
+      transparent 2px 3px
+    ),
+    linear-gradient(
+      180deg,
+      #fff8d6 0%,
+      #ffe98a 16%,
+      #f0c84a 34%,
+      #e6b422 50%,
+      #b8860b 68%,
+      #7a520c 86%,
+      #c99412 100%
+    );
+  background-size: 220% 100%, auto, auto;
+  background-position: 40% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gold-type-shine 6.2s ease-in-out infinite;
+}
+
+@keyframes gold-type-shine {
+  0% { background-position: 130% 50%, 0 0, 0 0; }
+  100% { background-position: -50% 50%, 0 0, 0 0; }
 }
 
 .total-gold-row {
@@ -519,10 +523,13 @@ h1 {
   -webkit-text-stroke: 0;
   -webkit-text-fill-color: #e6b422;
   color: #e6b422;
+  background: none;
+  animation: none;
 }
 
 .info-stage {
-  width: min(100%, calc(100dvh - 330px));
+  width: 100%;
+  max-width: 100%;
   aspect-ratio: 1 / 1;
   flex: 0 0 auto;
   position: relative;
@@ -535,9 +542,9 @@ h1 {
 
 .chart-card {
   width: 100%;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 118px;
-  max-height: 168px;
+  max-height: none;
   display: flex;
   flex-direction: column;
   padding: 8px 10px 6px;
@@ -578,12 +585,30 @@ h1 {
   overflow: visible;
 }
 
-.price-chart #chart-line {
+.price-chart #chart-line,
+.price-chart #xau-line {
   stroke: #c99412;
   stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
   filter: drop-shadow(0 1px 0 #fff6d0);
+}
+
+.chart-xau {
+  flex: 0 0 auto;
+  min-height: 0;
+  max-height: none;
+  padding: 6px 10px 4px;
+}
+
+.xau-chart {
+  flex: none;
+  height: 50px;
+  min-height: 50px;
+}
+
+.price-chart #xau-line {
+  stroke-width: 1.6;
 }
 
 .chart-axis {
@@ -610,11 +635,13 @@ h1 {
   position: relative;
   z-index: 1;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 10px;
   padding: 16px 14px 14px;
+  overflow: auto;
   background: linear-gradient(
     180deg,
     rgba(255, 248, 232, 0.32) 0%,
@@ -753,12 +780,14 @@ h1 {
 
 html.is-app,
 html.is-app body {
-  height: 100%;
-  overflow: hidden;
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 html.is-app body {
-  overscroll-behavior: none;
+  overscroll-behavior: auto;
   -webkit-user-select: none;
   user-select: none;
   touch-action: manipulation;
@@ -783,22 +812,27 @@ html.is-app main {
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
-  container-type: size;
   padding: 4px 10px;
   gap: 8px;
+  overflow: visible;
 }
 
 html.is-app .info-stage {
-  width: min(100%, calc(100cqh - 128px));
-  height: min(100cqw, calc(100cqh - 128px));
-  aspect-ratio: auto;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
   max-height: none;
 }
 
 html.is-app .chart-card {
-  flex: 1 1 0;
-  min-height: 92px;
+  flex: 0 0 auto;
+  min-height: 118px;
   max-height: none;
+}
+
+html.is-app .chart-xau {
+  flex: 0 0 auto;
+  min-height: 0;
 }
 
 html.is-app .copyright {

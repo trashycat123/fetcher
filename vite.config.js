@@ -23,6 +23,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: () => "",
       },
+      "/xau-history": {
+        target: "https://query1.finance.yahoo.com",
+        changeOrigin: true,
+        rewrite: () => "/v8/finance/chart/GC=F?interval=1mo&range=max",
+      },
     },
   },
 });

@@ -130,10 +130,11 @@ function smoothLine(points) {
     const p1 = points[i];
     const p2 = points[i + 1];
     const p3 = points[i + 2] || p2;
+    const lastSeg = i === points.length - 2;
     const c1x = p1.x + (p2.x - p0.x) / 6;
     const c1y = p1.y + (p2.y - p0.y) / 6;
-    const c2x = p2.x - (p3.x - p1.x) / 6;
-    const c2y = p2.y - (p3.y - p1.y) / 6;
+    const c2x = lastSeg ? p2.x : p2.x - (p3.x - p1.x) / 6;
+    const c2y = lastSeg ? p2.y : p2.y - (p3.y - p1.y) / 6;
     d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;
   }
   return d;
@@ -182,27 +183,27 @@ function applyGldrArrows() {
   setArrow(document.getElementById("worth-arrow"), dir);
 }
 
-function renderChart(series) {
-  const line = document.getElementById("chart-line");
-  const fill = document.getElementById("chart-fill");
-  const price = document.getElementById("chart-price");
-  if (!line || !fill || !price) return;
+function renderChart(series, opts = {}) {
+  const line = document.getElementById(opts.lineId || "chart-line");
+  const fill = document.getElementById(opts.fillId || "chart-fill");
+  const price = document.getElementById(opts.priceId || "chart-price");
+  if (!line || !fill) return;
 
   if (!series.length) {
     line.setAttribute("d", "");
     fill.setAttribute("d", "");
-    price.textContent = "$—";
+    if (price && !opts.skipPrice) price.textContent = "$—";
     return;
   }
 
   const last = series[series.length - 1].close;
-  price.textContent = formatChartUsd(last);
+  if (price && !opts.skipPrice) price.textContent = formatChartUsd(last);
 
-  const width = 400;
-  const height = 140;
-  const padX = 10;
-  const padTop = 14;
-  const padBottom = 12;
+  const width = opts.width || 400;
+  const height = opts.height || 140;
+  const padX = opts.padX ?? 10;
+  const padTop = opts.padTop ?? 14;
+  const padBottom = opts.padBottom ?? 12;
   const ys = series.map((p) => p.close);
   let min = Math.min(...ys);
   let max = Math.max(...ys);
@@ -230,6 +231,64 @@ function renderChart(series) {
   );
 }
 
+function parseGoldAnnualCsv(text, cutoffYear) {
+  return text
+    .trim()
+    .split(/\n/)
+    .slice(1)
+    .map((line) => {
+      const [date, price] = line.split(",");
+      const year = Number(String(date).slice(0, 4));
+      const close = Number(price);
+      if (!Number.isFinite(year) || year < cutoffYear || !Number.isFinite(close)) {
+        return null;
+      }
+      return { t: Date.UTC(year, 6, 1) / 1000, close };
+    })
+    .filter(Boolean);
+}
+
+async function fetchXauCentury() {
+  const cutoffYear = new Date().getFullYear() - 100;
+  const csvUrls = [
+    "https://cdn.jsdelivr.net/gh/datasets/gold-prices@master/data/annual.csv",
+    "https://raw.githubusercontent.com/datasets/gold-prices/master/data/annual.csv",
+  ];
+  for (const url of csvUrls) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      const series = parseGoldAnnualCsv(await res.text(), cutoffYear);
+      if (series.length > 10) return series;
+    } catch {
+      /* try next source */
+    }
+  }
+
+  const yahooUrls = [
+    "/xau-history",
+    "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?interval=1mo&range=max",
+  ];
+  const cutoff = Date.now() / 1000 - 100 * 365.25 * 24 * 3600;
+  for (const url of yahooUrls) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      const data = await res.json();
+      const result = data?.chart?.result?.[0];
+      const stamps = result?.timestamp || [];
+      const closes = result?.indicators?.quote?.[0]?.close || [];
+      const series = stamps
+        .map((t, i) => ({ t: Number(t), close: Number(closes[i]) }))
+        .filter((p) => Number.isFinite(p.t) && Number.isFinite(p.close) && p.t >= cutoff);
+      if (series.length > 10) return series;
+    } catch {
+      /* try next source */
+    }
+  }
+  throw new Error("Gold history unavailable");
+}
+
 async function fetchPrices() {
   const res = await fetch(
     "https://api.dexscreener.com/latest/dex/tokens/" + GLDR.toLowerCase(),
@@ -245,7 +304,27 @@ async function fetchPrices() {
   if (!pair) throw new Error("No GLDR market found");
   const gldrUsd = Number(pair.priceUsd);
   const gldrPerGld = Number(pair.priceNative);
-  const gldUsd = gldrPerGld > 0 ? gldrUsd / gldrPerGld : 0;
+  let gldUsd = gldrPerGld > 0 ? gldrUsd / gldrPerGld : 0;
+  const gldAddr = pair.quoteToken?.address;
+  if (gldAddr) {
+    try {
+      const gldRes = await fetch(
+        "https://api.dexscreener.com/latest/dex/tokens/" + gldAddr,
+      );
+      if (gldRes.ok) {
+        const gldData = await gldRes.json();
+        const gldPair = (gldData.pairs || []).find(
+          (p) =>
+            p.chainId === "robinhood" &&
+            p.baseToken?.address?.toLowerCase() === gldAddr.toLowerCase(),
+        );
+        const direct = Number(gldPair?.priceUsd);
+        if (direct > 0) gldUsd = direct;
+      }
+    } catch {
+      /* keep derived GLD price */
+    }
+  }
   return { gldrUsd, gldUsd };
 }
 
@@ -301,7 +380,7 @@ const els = {
 };
 
 let prices = { gldrUsd: 0, gldUsd: 0 };
-let change = { gldr: "", gld: "" };
+let change = { gldr: "" };
 let lastTotalUsd = null;
 
 function pingRise(el) {
@@ -314,6 +393,12 @@ function pingRise(el) {
     () => el.classList.remove("is-rising"),
     { once: true },
   );
+}
+
+function paintGldQuote() {
+  const quote = document.getElementById("xau-price");
+  if (!quote) return;
+  quote.textContent = prices.gldUsd > 0 ? formatUsd(prices.gldUsd) : "$—";
 }
 
 async function refreshTotals() {
@@ -331,8 +416,7 @@ async function refreshTotals() {
       pingRise(totalArrow);
     }
     lastTotalUsd = fees.totalUsd;
-    const gldPrice = document.getElementById("gld-price");
-    if (gldPrice) gldPrice.textContent = formatUsd(prices.gldUsd);
+    paintGldQuote();
   } catch {
     els.total.textContent = "$—";
   }
@@ -342,8 +426,8 @@ async function refreshTotals() {
 function fitHeadline() {
   const h1 = document.querySelector(".info-overlay > h1");
   if (!h1 || h1.clientWidth < 40) return;
-  h1.style.fontSize = "32px";
-  let size = 32;
+  h1.style.fontSize = "36px";
+  let size = 36;
   while (h1.scrollWidth > h1.clientWidth && size > 11) {
     size -= 0.35;
     h1.style.fontSize = `${size}px`;
@@ -352,22 +436,36 @@ function fitHeadline() {
 
 async function refreshChart() {
   try {
-    const [gldrSeries, gldSeries] = await Promise.all([
-      fetchTwelveHourCloses("base"),
-      fetchTwelveHourCloses("quote"),
-    ]);
+    const gldrSeries = await fetchTwelveHourCloses("base");
     change.gldr = changeDir(gldrSeries);
-    change.gld = changeDir(gldSeries);
     renderChart(gldrSeries);
-    setArrow(document.getElementById("gld-arrow"), change.gld);
     applyGldrArrows();
   } catch {
     renderChart([]);
-    setArrow(document.getElementById("gld-arrow"), "");
     change.gldr = "";
-    change.gld = "";
     applyGldrArrows();
   }
+}
+
+async function refreshXauChart() {
+  const xauOpts = {
+    lineId: "xau-line",
+    fillId: "xau-fill",
+    priceId: "xau-price",
+    width: 400,
+    height: 50,
+    padX: 8,
+    padTop: 6,
+    padBottom: 6,
+    skipPrice: true,
+  };
+  try {
+    const series = await fetchXauCentury();
+    renderChart(series, xauOpts);
+  } catch {
+    renderChart([], xauOpts);
+  }
+  paintGldQuote();
 }
 
 function showError(message) {
@@ -416,6 +514,7 @@ if (saved) {
 
 refreshTotals().then(() => {
   if (saved) lookupWallet(saved);
+  refreshXauChart();
 });
 refreshChart();
 fitHeadline();
@@ -429,6 +528,7 @@ if (headlineBox && typeof ResizeObserver !== "undefined") {
 
 setInterval(refreshTotals, 60_000);
 setInterval(refreshChart, 60_000);
+setInterval(refreshXauChart, 60 * 60_000);
 
 function nextShimmerDelay() {
   return 4000 + Math.random() * 3000;
